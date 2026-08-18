@@ -71,7 +71,7 @@ def _open(data: bytes) -> PILImage:
     RGB so pixel identity means visual identity; a fully-opaque alpha channel
     is dropped (PowerPoint re-saves such images as RGB)."""
     _require_pillow()
-    im: "PILImage" = Image.open(io.BytesIO(data))
+    im: PILImage = Image.open(io.BytesIO(data))
     w, h = im.size
     if w <= 0 or h <= 0 or w * h > MAX_PIXELS:
         raise ValueError(f"{w}x{h} outside decode limits")
