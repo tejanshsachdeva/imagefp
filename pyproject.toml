@@ -1,0 +1,82 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "imagefp"
+version = "0.5.0"
+description = "Decide whether two images (raster or EMF/WMF metafile) depict the same picture, tolerant of re-encoding, alpha-flattening, cropping, and metadata churn."
+readme = "README.md"
+license = "MIT"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [
+    { name = "Tejansh Sachdeva" },
+]
+keywords = [
+    "image",
+    "comparison",
+    "perceptual-hash",
+    "deduplication",
+    "powerpoint",
+    "emf",
+    "pptx",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Multimedia :: Graphics",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+
+# Pillow is required for raster comparison (images_match on .png/.jpg/etc).
+# EMF/WMF metafile comparison (emf_signature) has no dependency on it at all.
+dependencies = [
+    "Pillow>=9.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+    "mypy>=1.0",
+    "ruff>=0.4",
+]
+
+[project.urls]
+Homepage = "https://github.com/tejanshsachdeva/imagefp"
+Repository = "https://github.com/tejanshsachdeva/imagefp.git"
+Issues = "https://github.com/tejanshsachdeva/imagefp/issues"
+Changelog = "https://github.com/tejanshsachdeva/imagefp/blob/main/CHANGELOG.md"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/imagefp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-ra -q --cov=imagefp --cov-report=term-missing"
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+strict = false
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
