@@ -7,7 +7,7 @@ import imagefp
 
 def test_version_is_exposed():
     assert isinstance(imagefp.__version__, str)
-    assert imagefp.__version__.count(".") == 2
+    assert imagefp.__version__ == "0.6.0"
 
 
 def test_public_api_is_importable():

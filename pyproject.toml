@@ -4,8 +4,8 @@ build-backend = "hatchling.build"
 
 [project]
 name = "imagefp"
-version = "0.5.0"
-description = "Decide whether two images (raster or EMF/WMF metafile) depict the same picture, tolerant of re-encoding, alpha-flattening, cropping, and metadata churn."
+version = "0.6.0"
+description = "Decide whether two images (raster or EMF metafile) depict the same picture, tolerant of re-encoding, alpha-flattening, cropping, and metadata churn."
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
@@ -15,11 +15,18 @@ authors = [
 ]
 keywords = [
     "image",
-    "comparison",
+    "image-comparison",
+    "image-diff",
+    "image-hash",
     "perceptual-hash",
-    "deduplication",
+    "phash",
+    "image-deduplication",
+    "duplicate-detection",
+    "duplicate-image-finder",
     "powerpoint",
+    "office-automation",
     "emf",
+    "wmf",
     "pptx",
 ]
 classifiers = [
@@ -34,6 +41,8 @@ classifiers = [
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Topic :: Multimedia :: Graphics",
+    "Topic :: Multimedia :: Graphics :: Graphics Conversion",
+    "Topic :: Office/Business",
     "Topic :: Software Development :: Libraries :: Python Modules",
     "Typing :: Typed",
 ]

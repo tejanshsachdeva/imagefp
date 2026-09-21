@@ -155,6 +155,53 @@ def wmf_bytes() -> bytes:
 
 
 @pytest.fixture
+def emf_emfplus_base(emf_header: bytes) -> bytes:
+    """An EMF whose EMR_COMMENT carries a real EMF+ drawing payload
+    (CommentIdentifier == 0x2B464D45, "+FME"), plus a separate generic
+    metadata comment that re-exports would legitimately change."""
+    emfplus_id = struct.pack("<I", 0x2B464D45)
+    datasize = b"\x00\x00\x00\x00"
+    return build_emf([
+        (1, emf_header),
+        (70, datasize + emfplus_id + b"EMFPLUS-DRAWING-AAAA"),  # real drawing content
+        (70, b"export-timestamp-2025-01-01"),                    # generic metadata comment
+        (54, b"\x01\x02\x03\x04"),
+        (14, b"\x00\x00\x00\x00"),
+    ])
+
+
+@pytest.fixture
+def emf_emfplus_different_drawing(emf_header: bytes) -> bytes:
+    """Same structure as emf_emfplus_base, but the EMF+ drawing payload
+    itself differs -- a genuinely different chart."""
+    emfplus_id = struct.pack("<I", 0x2B464D45)
+    datasize = b"\x00\x00\x00\x00"
+    return build_emf([
+        (1, emf_header),
+        (70, datasize + emfplus_id + b"EMFPLUS-DRAWING-BBBB"),  # different drawing content
+        (70, b"export-timestamp-2025-01-01"),
+        (54, b"\x01\x02\x03\x04"),
+        (14, b"\x00\x00\x00\x00"),
+    ])
+
+
+@pytest.fixture
+def emf_emfplus_different_metadata(emf_header: bytes) -> bytes:
+    """Same EMF+ drawing payload as emf_emfplus_base, but the generic
+    metadata comment content differs -- simulating a re-export a week
+    later with a new timestamp/GUID but no actual edit."""
+    emfplus_id = struct.pack("<I", 0x2B464D45)
+    datasize = b"\x00\x00\x00\x00"
+    return build_emf([
+        (1, emf_header),
+        (70, datasize + emfplus_id + b"EMFPLUS-DRAWING-AAAA"),  # identical drawing content
+        (70, b"export-timestamp-2026-06-01-DIFFERENT-GUID"),     # changed metadata
+        (54, b"\x01\x02\x03\x04"),
+        (14, b"\x00\x00\x00\x00"),
+    ])
+
+
+@pytest.fixture
 def emf_real_edit(emf_header: bytes) -> bytes:
     """A genuinely different drawing: the drawing record payload itself changed."""
     return build_emf([

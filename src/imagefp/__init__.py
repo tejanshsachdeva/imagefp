@@ -9,6 +9,9 @@ Typical usage::
         print("duplicate:", reason)
 """
 
+from importlib.metadata import PackageNotFoundError
+from importlib.metadata import version as _pkg_version
+
 from .core import (
     DEFAULT_ASPECT_TOL,
     DEFAULT_INK_FLOOR,
@@ -29,7 +32,10 @@ from .core import (
     thumb_distance,
 )
 
-__version__ = "0.5.0"
+try:
+    __version__ = _pkg_version("imagefp")
+except PackageNotFoundError:  # pragma: no cover - only when run uninstalled
+    __version__ = "0.6.0"
 
 __all__ = [
     "__version__",

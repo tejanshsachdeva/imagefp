@@ -18,8 +18,8 @@ pip install imagefp
 
 Raster comparison (`.png`, `.jpg`, `.gif`, `.bmp`, `.tiff`, `.webp`, ...)
 requires [Pillow](https://pypi.org/project/Pillow/), which is installed
-automatically as a dependency. EMF/WMF metafile comparison has no extra
-dependency.
+automatically as a dependency. EMF metafile comparison has no extra
+dependency (WMF is not supported yet).
 
 ## Quick start
 
@@ -52,7 +52,8 @@ were or weren't considered the same.
 1. **Classify** each file as raster (`.png`, `.jpg`, `.webp`, ...) or
    metafile (`.emf`, `.wmf`) by extension.
 2. **Rasters** are compared with a perceptual fingerprint:
-   - Crop to actual content (ignore blank padding/margins).
+   - Apply EXIF orientation, then crop to actual content (ignore blank
+     padding/margins; ink is detected from alpha or from a flat border colour).
    - Composite any transparency onto white, the same way PowerPoint does
      when it re-saves an image — so a transparent logo and its flattened
      export land in the same colour space.
@@ -61,22 +62,25 @@ were or weren't considered the same.
    - Compare in three gates, cheapest first: aspect ratio, then ink-mask
      shape, then colour — measured **only** over cells where both images
      actually have ink, so background/padding differences can't skew it.
-3. **Metafiles** (EMF) are compared by hashing their drawing records,
-   deliberately skipping the header (which changes on resize) and comment
-   records (where per-export metadata/timestamps live) — so the same chart
-   re-exported a week later still matches, while an actual edit does not.
+3. **Metafiles** (`.emf` only) are compared by hashing drawing records,
+   skipping the header (resize bounds), skipping non-EMF+ metadata comments,
+   but **including EMF+ comment payloads** where Office stores GDI+ drawing
+   data — so the same chart re-exported with new timestamps still matches,
+   while an edit to the drawing (including EMF+ content) does not. The file
+   must be a complete EMF (through `EMR_EOF`); truncated files are rejected.
 4. **Anything uncertain returns "different."** Undecodable bytes, a
-   raster-vs-metafile mismatch, missing bytes, or an unparsable metafile —
-   all of these are reported as *not a match*, never as an uncertain match.
+   raster-vs-metafile mismatch, missing bytes, unsupported WMF, or an
+   incomplete/corrupt EMF — all reported as *not a match*, never as an
+   uncertain match.
 
 ## What it does *not* do
 
 - It cannot detect a match after a resize that rewrites an EMF's actual
   drawing coordinates (as opposed to just its header bounds) — that would
   require rendering the metafile to pixels, which is out of scope.
-- `.wmf` files are legacy 16-bit metafiles with a different record format
-  and are currently always reported as unreadable (`emf_signature` returns
-  `None` for them). If you need WMF support, open an issue.
+- `.wmf` files are legacy 16-bit metafiles and are **not supported yet**
+  (`images_match` returns an explicit “WMF is not supported” reason). Only
+  `.emf` metafiles are compared. Open an issue if you need WMF.
 - This is a "is this the same picture" tool, not a general reverse-image
   search or similarity ranker — it returns a boolean, not a similarity
   score for ranking many candidates (though the `reason` string exposes the
